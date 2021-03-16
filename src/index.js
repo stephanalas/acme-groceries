@@ -18,7 +18,7 @@ class _App extends Component{
     this.props.setView(window.location.hash.slice(1));
   }
   render(){
-    const { groceries, view } = this.props;
+    // const { groceries, view } = this.props;
     return (
       <div>
         <h1>Acme Groceries</h1>

@@ -1,24 +1,40 @@
-import { createStore } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import thunkMiddleware from 'redux-thunk';
 
-const initialState = {
-  groceries: [],
-  view: ''
+const LOAD = 'LOAD';
+const UPDATE = 'UPDATE';
+const CREATE = 'CREATE';
+const SET_VIEW = 'SET_VIEW'
+
+
+const groceryReducer = (state = [], action) => {
+  const { type } = action;
+  if (type === LOAD) {
+    state =  action.groceries
+  } else if (type === UPDATE) {
+    state = state.map(grocery => grocery.id === action.grocery.id ? action.grocery  : grocery )
+  } else if (type === CREATE) {
+    state = [...state, action.grocery]
+  }
+  return state
+  
 };
-const store = createStore((state = initialState, action)=> {
-  if(action.type === 'LOAD'){
-    state = {...state, groceries: action.groceries };
+
+const viewReducer = (state = '', action) => {
+  if (action.type === SET_VIEW) {
+    state = `${action.view}`;
   }
-  if(action.type === 'UPDATE'){
-    state = {...state, groceries: state.groceries.map(grocery => grocery.id === action.grocery.id ? action.grocery : grocery )};
-  }
-  if(action.type === 'CREATE'){
-    state = {...state, groceries: [...state.groceries, action.grocery ]}
-  }
-  if(action.type === 'SET_VIEW'){
-    state = {...state, view: action.view};
-  }
-  return state;
-});
+  return state
+}
+
+const reducer = combineReducers({
+  groceries: groceryReducer,
+  view: viewReducer
+})
+
+const middleWare = applyMiddleware(thunkMiddleware);
+
+const store = createStore(reducer, middleWare);
 
 export default store;
 
